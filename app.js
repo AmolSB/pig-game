@@ -9,7 +9,7 @@ GAME RULES:
 
 */
 
-var scores, roundScore, activePlayer, gamePlaying;
+var scores, roundScore, activePlayer, gamePlaying, prevDice, winningScore;
 
 init();
 
@@ -17,13 +17,18 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
 
     if (gamePlaying) {
         var dice = Math.ceil(Math.random() * 6);
-
+        console.log(dice)
         var diceDOM = document.querySelector('.dice');
         diceDOM.style.display = 'block';
         diceDOM.src = 'dice-' + dice + '.png';
 
+        if (prevDice == 6 && dice == 6) {
+            scores[activePlayer] = 0;
+            document.getElementById('score-' + activePlayer).textContent = '0'
+            nextPlayer();
+        }
         // Update the round score IF the rolled number was NOT a 1
-        if (dice !== 1) {
+        else if (dice !== 1) {
             // Add Score
             roundScore += dice;
             document.querySelector('#current-' + activePlayer).textContent = roundScore;
@@ -31,6 +36,7 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
             // Next Player
             nextPlayer();
         }
+        prevDice = dice;
     }
 });
 
@@ -45,7 +51,7 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
         document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
 
         // Check if player won the game
-        if (scores[activePlayer] >= 20) {
+        if (scores[activePlayer] >= winningScore) {
             document.querySelector('#name-' + activePlayer).textContent = 'Winner!';
             document.querySelector('.dice').style.display = 'none';
             document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
@@ -58,6 +64,10 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
     }
 })
 
+var inputWinningScore = document.querySelector('.winning-score')
+inputWinningScore.addEventListener('input', function () {
+    winningScore = inputWinningScore.value;
+})
 
 function nextPlayer() {
     activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
